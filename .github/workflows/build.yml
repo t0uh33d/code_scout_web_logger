@@ -23,16 +23,15 @@ jobs:
         if: runner.os == 'Windows'
         run: |
           echo "${{ secrets.GIT_SSH_KEY }}" | Out-File -Encoding ascii -FilePath ssh_key
-          New-Item -ItemType Directory -Force -Path "$env:USERPROFILE\.ssh"
+          mkdir -Force $env:USERPROFILE\.ssh
           Set-Content -Path "$env:USERPROFILE\.ssh\config" -Value @"
-          Host gitlab.com-codewave
+          Host gitlab.com
               HostName gitlab.com
               User git
               IdentityFile ${{ github.workspace }}\ssh_key
               StrictHostKeyChecking no
           "@
           ssh-keyscan -t rsa gitlab.com >> $env:USERPROFILE\.ssh\known_hosts
-          Get-Content $env:USERPROFILE\.ssh\known_hosts
           chmod 600 ssh_key
         shell: powershell
 
