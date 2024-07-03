@@ -1,3 +1,4 @@
+import 'package:code_scout_web_logger/ansi_parser.dart';
 import 'package:flutter/material.dart';
 
 class TerminalWidget extends StatefulWidget {
@@ -22,7 +23,6 @@ class _TerminalWidgetState extends State<TerminalWidget> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) => _scrollToBottom());
   }
 
   void _scrollToBottom() {
@@ -35,6 +35,7 @@ class _TerminalWidgetState extends State<TerminalWidget> {
 
   @override
   Widget build(BuildContext context) {
+    WidgetsBinding.instance.addPostFrameCallback((_) => _scrollToBottom());
     return Container(
       color: Colors.black,
       child: Column(
@@ -47,10 +48,11 @@ class _TerminalWidgetState extends State<TerminalWidget> {
                 return Padding(
                   padding:
                       const EdgeInsets.symmetric(vertical: 2, horizontal: 8),
-                  child: Text(
-                    widget.logs[index],
-                    style: const TextStyle(
-                        color: Colors.green, fontFamily: 'Courier'),
+                  child: RichText(
+                    text: TextSpan(
+                      children: AnsiParser.parseAnsiString(widget.logs[index]),
+                      style: const TextStyle(fontFamily: 'Courier'),
+                    ),
                   ),
                 );
               },

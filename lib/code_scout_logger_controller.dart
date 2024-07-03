@@ -2,8 +2,10 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:convert';
 import 'dart:math' as math;
+import 'dart:ui';
 import 'package:cw_core/cw_core.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 
 enum CodeScoutLoggerState {
   initializing,
@@ -32,7 +34,6 @@ class CodeScoutLoggerController extends ChangeNotifier {
 
   void init(StateUpdater stateUpdater) {
     _stateUpdater = stateUpdater;
-    getConnectionDetails();
   }
 
   void refresh() {
@@ -49,8 +50,15 @@ class CodeScoutLoggerController extends ChangeNotifier {
     getConnectionDetails();
   }
 
-  void terminalWrite(String data) {
-    logs.add(data);
+  void terminalWrite(String data, {Color color = Colors.green}) {
+    String colorCode = '';
+    if (color != Colors.green) {
+      int r = color.red;
+      int g = color.green;
+      int b = color.blue;
+      colorCode = '\x1b[38;2;$r;$g;${b}m';
+    }
+    logs.add('$colorCode$data\x1b[0m');
     _stateUpdater.call(() {});
   }
 
@@ -95,9 +103,9 @@ class CodeScoutLoggerController extends ChangeNotifier {
     identifier = generateIdentifier();
 
     ipAddress = localIP;
-    terminalWrite('IP Address : $ipAddress');
-    terminalWrite('Port : $portNumber');
-    terminalWrite('Identifier : $identifier');
+    terminalWrite('IP Address : $ipAddress', color: Colors.yellow);
+    terminalWrite('Port : $portNumber', color: Colors.yellow);
+    terminalWrite('Identifier : $identifier', color: Colors.yellow);
 
     _stateUpdater(() {
       currentState = CodeScoutLoggerState.ready;

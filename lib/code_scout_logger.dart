@@ -24,7 +24,7 @@ class _CodeScoutLoggerState extends State<CodeScoutLogger> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('CodeScout Logger'),
+        title: const Text('CodeScout Logger v1'),
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),
