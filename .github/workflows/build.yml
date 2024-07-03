@@ -1,0 +1,62 @@
+name: Build and Release Windows App
+
+on:
+  push:
+    tags:
+      - "v*.*.*" # Trigger the workflow on version tags
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: "3.0.0" # Specify the Flutter version you are using
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Build Windows release
+        run: flutter build windows --release
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: flutter-windows-build
+          path: build/windows/runner/Release/
+
+  release:
+    needs: build
+    runs-on: windows-latest
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: flutter-windows-build
+          path: build/windows/runner/Release/
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          draft: false
+          prerelease: false
+
+      - name: Upload Windows build to Release
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: build/windows/runner/Release/code_scount_web_logger.exe
+          asset_name: code_scount_web_logger.exe
+          asset_content_type: application/octet-stream
