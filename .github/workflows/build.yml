@@ -25,9 +25,9 @@ jobs:
           echo "${{ secrets.GIT_SSH_KEY }}" | Out-File -Encoding ascii -FilePath ssh_key
           mkdir -Force $env:USERPROFILE\.ssh
           Set-Content -Path "$env:USERPROFILE\.ssh\config" -Value @"
-          Host gitlab.com
+          Host gitlab.com-codewave
               HostName gitlab.com
-              User git
+              User t0uh33d
               IdentityFile ${{ github.workspace }}\ssh_key
               StrictHostKeyChecking no
           "@
